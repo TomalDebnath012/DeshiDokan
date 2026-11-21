@@ -1,10 +1,1163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - DeshiDokan</title>
+<meta charset="UTF-8">
+<script>try{if(sessionStorage.getItem('dd_intro')){document.documentElement.classList.add('no-intro')}else{sessionStorage.setItem('dd_intro','1')}}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in — DeshiDokan | দেশীদোকান</title>
+<meta name="description" content="Log in to DeshiDokan - Connect with authentic heritage products across 64 districts of Bangladesh.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet">
+<!--
+=============================================================================
+DeshiDokan — Login Page (Frontend-Only, Self-Contained)
+Sections:
+  1. Design Tokens & Reset
+  2. Ambient Background & Haat Bazar Canvas Integration
+  3. Intro Curtain Animation (Session-Aware)
+  4. Centered Frosted-Glass Card Layout
+  5. Floating Top-Left "Back to Home" Glass Pill
+  6. Floating Label Inputs, Password Toggle, Checkbox, Buttons & Toast
+  7. Responsive Breakpoints (Desktop, Tablet, Mobile 360px+)
+  8. Interactive JavaScript (3D card tilt, Validation, Demo Simulation)
+=============================================================================
+-->
+<style>
+.no-intro .intro{display:none!important}
+.bg-ambient{display:none}
+
+:root {
+  --forest: #1F4D36;
+  --forest-deep: #153827;
+  --forest-wash: #E6EFE8;
+  --cream: #F6F0E3;
+  --cream-2: #EFE6D2;
+  --white: #ffffff;
+  --terra: #C2693F;
+  --terra-wash: #F6E3D8;
+  --ink: #16201A;
+  --muted: #5B665F;
+  --border: #E1DACA;
+  --gold: #D4A347;
+  --gold-wash: #FAF2DF;
+  --error: #C24A3F;
+  --error-wash: #FDF0EE;
+  --success: #267A4F;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; height: 100%; }
+
+body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(135deg, #F8F3E7 0%, #F3ECDA 50%, #E7EFE2 100%);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  overflow-x: clip;
+  position: relative;
+}
+
+.bn { font-family: "Hind Siliguri", Inter, sans-serif; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Background grid & ambient glow blobs */
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Intro Curtain (Matches DeshiDokan homepage intro) */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: var(--forest-deep);
+  transition: transform 0.9s var(--ease) 0.1s, opacity 0.4s ease 1s;
+  animation: introOut 0s linear 1.6s forwards;
+  pointer-events: none;
+}
+.intro .ripple {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(246, 240, 227, 0.15);
+  animation: ripple 1.6s var(--ease) 0.1s forwards;
+}
+.intro-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--cream);
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  position: relative;
+}
+.intro-brand .mark {
+  width: 44px;
+  height: 44px;
+  animation: pop 0.7s var(--ease) both;
+}
+.intro-brand span.l {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: rise 0.5s var(--ease) forwards;
+}
+body.ready .intro {
+  transform: translateY(-100%);
+}
+@keyframes ripple { to { transform: scale(150); opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.4) rotate(-20deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes rise { to { opacity: 1; transform: none; } }
+@keyframes introOut { to { visibility: hidden; } }
+
+/* Fixed Top-Left Back to Home Glass Pill */
+.nav-back-pill {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 10px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px -6px rgba(21, 56, 39, 0.16);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: transform 0.25s var(--ease), background-color 0.25s, box-shadow 0.25s;
+}
+.nav-back-pill:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 28px -6px rgba(21, 56, 39, 0.22);
+}
+.nav-back-pill:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+}
+.nav-logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo-mark svg {
+  width: 28px;
+  height: 28px;
+}
+.nav-brand-text {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--forest-deep);
+}
+.nav-brand-text b {
+  color: var(--terra);
+}
+.nav-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(22, 32, 26, 0.16);
+}
+.nav-back-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-back-pill:hover .nav-back-label {
+  color: var(--forest-deep);
+}
+.nav-back-label svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s var(--ease);
+}
+.nav-back-pill:hover .nav-back-label svg {
+  transform: translateX(-2px);
+}
+
+/* Centered Page Wrapper */
+.page-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  margin: auto;
+  perspective: 1000px;
+}
+
+/* Centered Card with Soft Faded Glass Look */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.52) 100%);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 28px;
+  padding: 40px 36px;
+  box-shadow: 
+    0 30px 80px -30px rgba(21, 56, 39, 0.35), 
+    0 0 120px 20px rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(10px);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.7s var(--ease), filter 0.7s var(--ease);
+  position: relative;
+}
+
+body.ready .auth-card {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Header & Typography */
+.auth-header {
+  margin-bottom: 28px;
+}
+.auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--forest);
+  background: var(--forest-wash);
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.auth-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.auth-subtitle {
+  font-size: 15px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.auth-subtitle .bn {
+  font-size: 16px;
+  color: var(--terra);
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* Staggered Form Entrance Animation */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease), filter 0.6s var(--ease);
+}
+body.ready .stagger-item {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+body.ready .s-1 { transition-delay: 0.10s; }
+body.ready .s-2 { transition-delay: 0.18s; }
+body.ready .s-3 { transition-delay: 0.26s; }
+body.ready .s-4 { transition-delay: 0.34s; }
+body.ready .s-5 { transition-delay: 0.42s; }
+body.ready .s-6 { transition-delay: 0.50s; }
+body.ready .s-7 { transition-delay: 0.58s; }
+
+/* Form Fields & Floating Labels */
+.form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  height: 52px;
+  padding: 16px 44px 0 16px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--ink);
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+}
+
+.form-input:hover {
+  border-color: #C5BCAC;
+}
+
+.form-input:focus {
+  border-color: var(--forest);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(31, 77, 54, 0.14);
+  outline: none;
+}
+
+/* Floating Label Behavior */
+.floating-label {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  font-size: 14px;
+  color: var(--muted);
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 0.25s var(--ease), color 0.25s var(--ease), font-size 0.25s var(--ease);
+}
+
+.form-input:focus ~ .floating-label,
+.form-input:not(:placeholder-shown) ~ .floating-label {
+  transform: translateY(-9px) scale(0.78);
+  color: var(--forest);
+  font-weight: 600;
+}
+
+/* Validation Status Styling */
+.form-group.has-error .form-input {
+  border-color: var(--error) !important;
+  background-color: var(--error-wash);
+  box-shadow: 0 0 0 3px rgba(194, 74, 63, 0.15) !important;
+  animation: shake 0.35s ease-in-out;
+}
+.form-group.has-error .floating-label {
+  color: var(--error) !important;
+}
+
+.form-group.has-success .form-input {
+  border-color: var(--success);
+}
+.form-group.has-success .valid-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.error-msg {
+  display: none;
+  font-size: 12px;
+  color: var(--error);
+  font-weight: 500;
+  margin-top: 6px;
+  margin-left: 4px;
+  animation: slideDown 0.25s var(--ease);
+}
+.form-group.has-error .error-msg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Input Icons */
+.input-action-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  transition: color 0.2s, background-color 0.2s;
+}
+.input-action-btn:hover {
+  color: var(--ink);
+  background: var(--cream-2);
+}
+.input-action-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.valid-check {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.6);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.valid-check svg {
+  width: 14px;
+  height: 14px;
+}
+.input-wrap.has-toggle .valid-check {
+  right: 44px;
+}
+
+/* Options Bar: Remember me & Forgot Password */
+.options-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 0 24px;
+  font-size: 13.5px;
+}
+
+.custom-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  color: var(--muted);
+  font-weight: 500;
+}
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.checkbox-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.checkbox-box svg {
+  width: 12px;
+  height: 12px;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 0.25s var(--ease);
+}
+.custom-checkbox input:checked ~ .checkbox-box {
+  background: var(--forest);
+  border-color: var(--forest);
+  box-shadow: 0 2px 6px rgba(31, 77, 54, 0.3);
+}
+.custom-checkbox input:checked ~ .checkbox-box svg {
+  stroke-dashoffset: 0;
+}
+.custom-checkbox input:focus-visible ~ .checkbox-box {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+}
+
+.forgot-link {
+  color: var(--terra);
+  font-weight: 600;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+.forgot-link:hover {
+  text-decoration: underline;
+  color: #A9562E;
+}
+
+/* Primary Button with Diagonal Shine and Ripple */
+.btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: transform 0.3s var(--ease), background-color 0.3s, box-shadow 0.3s;
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--forest);
+  color: #ffffff;
+  box-shadow: 0 10px 22px -12px rgba(21, 56, 39, 0.8);
+}
+.btn-primary:hover {
+  background: var(--forest-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px -12px rgba(21, 56, 39, 0.9);
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s var(--ease);
+}
+.btn-primary:hover::after {
+  transform: translateX(120%);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+.btn-ghost:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  border-color: #C5BCAC;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Button States */
+.btn-spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.btn.is-loading .btn-text { opacity: 0; }
+.btn.is-loading .btn-spinner { display: inline-block; position: absolute; }
+.btn.is-loading { pointer-events: none; }
+
+.btn.is-success {
+  background: var(--success) !important;
+}
+.btn-check-icon {
+  display: none;
+  width: 22px;
+  height: 22px;
+}
+.btn.is-success .btn-text { display: none; }
+.btn.is-success .btn-spinner { display: none; }
+.btn.is-success .btn-check-icon { display: inline-block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Ripple Effect */
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: btnRipple 0.6s linear;
+  pointer-events: none;
+}
+@keyframes btnRipple {
+  to { transform: scale(3.5); opacity: 0; }
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.divider::before, .divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.auth-footer a {
+  color: var(--forest);
+  font-weight: 600;
+  margin-left: 4px;
+  transition: color 0.2s, text-decoration 0.2s;
+}
+.auth-footer a:hover {
+  text-decoration: underline;
+  color: var(--forest-deep);
+}
+
+/* Toast Notification */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--forest-deep);
+  color: var(--cream);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 16px 36px -10px rgba(22, 32, 26, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transform: translateY(20px) scale(0.95);
+  opacity: 0;
+  transition: transform 0.35s var(--ease), opacity 0.35s var(--ease);
+}
+.toast.active {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+.toast.toast-terra {
+  background: var(--terra);
+}
+.toast.toast-error {
+  background: var(--error);
+}
+.toast svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 600px) {
+  body {
+    padding: 70px 16px 24px;
+    align-items: center;
+  }
+  .nav-back-pill {
+    top: 14px;
+    left: 14px;
+    padding: 7px 12px 7px 8px;
+  }
+  .nav-brand-text, .nav-divider {
+    display: none;
+  }
+  .nav-back-label span {
+    display: inline;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 30px 22px;
+    border-radius: 24px;
+  }
+  .auth-title {
+    font-size: 24px;
+  }
+  .options-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .intro { display: none !important; }
+  .auth-card { opacity: 1 !important; transform: none !important; filter: none !important; }
+  body.ready .stagger-item { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+</style>
 </head>
 <body>
+
+<!-- Ambient Faint Grid & Colored Floating Blobs -->
+<div class="bg-ambient" aria-hidden="true"></div>
+
+<!-- Top-Left Navigation Back Pill -->
+<a href="../index.html" class="nav-back-pill" aria-label="Back to home">
+  <span class="nav-logo-mark" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <rect width="40" height="40" rx="12" fill="#1F4D36"/>
+      <path d="M20 8c-1 4-6 6-6 12a6 6 0 0 0 12 0c0-6-5-8-6-12Z" fill="#F6F0E3"/>
+      <path d="M20 20v12M20 25l-4-3M20 28l4-3" stroke="#C2693F" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    </svg>
+  </span>
+  <span class="nav-brand-text">Deshi<b>Dokan</b></span>
+  <span class="nav-divider" aria-hidden="true"></span>
+  <span class="nav-back-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Back to home</span>
+  </span>
+</a>
+
+<!-- Intro Curtain (Branded Entrance Animation) -->
+<div class="intro" id="introCurtain" aria-hidden="true">
+  <div class="ripple"></div>
+  <div class="intro-brand">
+    <svg class="mark" viewBox="0 0 40 40">
+      <rect width="40" height="40" rx="12" fill="#1F4D36"/>
+      <path d="M20 8c-1 4-6 6-6 12a6 6 0 0 0 12 0c0-6-5-8-6-12Z" fill="#F6F0E3"/>
+      <path d="M20 20v12M20 25l-4-3M20 28l4-3" stroke="#C2693F" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span id="introLetters"></span>
+  </div>
+</div>
+
+<!-- Toast Notifications Container -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<!-- Centered Screen Layout -->
+<main class="page-wrap">
+
+  <!-- Centered Form Card -->
+  <div class="auth-card" id="loginCard">
+    
+    <!-- Card Header -->
+    <header class="auth-header stagger-item s-1">
+      <div class="auth-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+        </svg>
+        <span>Member Portal</span>
+      </div>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Log in to your account • <span class="bn">আবার স্বাগতম</span></p>
+    </header>
+
+    <!-- Login Form (Frontend Only, Novalidate) -->
+    <form id="loginForm" novalidate>
+      
+      <!-- Field 1: Email or Phone -->
+      <div class="form-group stagger-item s-2" id="groupEmail">
+        <div class="input-wrap">
+          <input 
+            type="text" 
+            id="userAccount" 
+            name="email" 
+            class="form-input" 
+            placeholder=" " 
+            autocomplete="username" 
+            required 
+            aria-describedby="emailError"
+          >
+          <label for="userAccount" class="floating-label">Email or Phone Number</label>
+          <div class="valid-check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="error-msg" id="emailError" role="alert">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span class="err-text">Please enter a valid email or 11-digit phone number</span>
+        </div>
+      </div>
+
+      <!-- Field 2: Password with Show/Hide toggle -->
+      <div class="form-group stagger-item s-3" id="groupPassword">
+        <div class="input-wrap has-toggle">
+          <input 
+            type="password" 
+            id="userPassword" 
+            name="password" 
+            class="form-input" 
+            placeholder=" " 
+            autocomplete="current-password" 
+            required 
+            aria-describedby="passwordError"
+          >
+          <label for="userPassword" class="floating-label">Password</label>
+          <div class="valid-check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <button type="button" class="input-action-btn" id="togglePasswordBtn" aria-label="Toggle password visibility">
+            <!-- Eye open icon -->
+            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <!-- Eye closed icon -->
+            <svg id="eyeClosed" style="display:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <div class="error-msg" id="passwordError" role="alert">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span class="err-text">Password must be at least 8 characters</span>
+        </div>
+      </div>
+
+      <!-- Options: Custom Checkbox & Forgot Password -->
+      <div class="options-bar stagger-item s-4">
+        <label class="custom-checkbox">
+          <input type="checkbox" name="remember" id="rememberMe">
+          <span class="checkbox-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-link" id="forgotPassLink">Forgot password?</a>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="stagger-item s-5">
+        <button type="submit" class="btn btn-primary" id="loginBtn">
+          <span class="btn-text">Log in</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <svg class="btn-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Divider -->
+    <div class="divider stagger-item s-6">or</div>
+
+    <!-- Guest Access Ghost Button -->
+    <div class="stagger-item s-6">
+      <a href="../index.html" class="btn btn-ghost">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Continue as guest</span>
+      </a>
+    </div>
+
+    <!-- Footer: Link to Registration -->
+    <footer class="auth-footer stagger-item s-7">
+      <span>New to DeshiDokan?</span>
+      <a href="register.html">Create account</a>
+    </footer>
+
+  </div>
+
+</main>
+
+<!-- Vanilla JavaScript (Interactivity, Validation, Animations, No Libraries) -->
+<script>
+(function() {
+  'use strict';
+
+  // 1. DOM Elements
+  var body = document.body;
+  var introCurtain = document.getElementById('introCurtain');
+  var introLetters = document.getElementById('introLetters');
+  var loginForm = document.getElementById('loginForm');
+  var userInput = document.getElementById('userAccount');
+  var passInput = document.getElementById('userPassword');
+  var groupEmail = document.getElementById('groupEmail');
+  var groupPassword = document.getElementById('groupPassword');
+  var togglePassBtn = document.getElementById('togglePasswordBtn');
+  var eyeOpen = document.getElementById('eyeOpen');
+  var eyeClosed = document.getElementById('eyeClosed');
+  var forgotPassLink = document.getElementById('forgotPassLink');
+  var loginBtn = document.getElementById('loginBtn');
+  var loginCard = document.getElementById('loginCard');
+  var toastContainer = document.getElementById('toastContainer');
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 2. Intro Curtain Letter Animation
+  var skip = document.documentElement.classList.contains('no-intro');
+  if (!prefersReduced && !skip && introLetters) {
+    var brandName = 'DeshiDokan';
+    brandName.split('').forEach(function(letter, i) {
+      var span = document.createElement('span');
+      span.className = 'l';
+      span.textContent = letter;
+      span.style.animationDelay = (0.2 + i * 0.05) + 's';
+      introLetters.appendChild(span);
+    });
+    setTimeout(function() {
+      body.classList.add('ready');
+    }, 1100);
+  } else {
+    body.classList.add('ready');
+    if (introCurtain) introCurtain.style.display = 'none';
+  }
+
+  // 3. Subtle 3D Tilt on Login Card (max 3deg on desktop only)
+  if (!prefersReduced && loginCard && window.innerWidth > 900) {
+    loginCard.addEventListener('mousemove', function(e) {
+      var rect = loginCard.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      loginCard.style.transform = 'perspective(1000px) rotateY(' + (x * 3) + 'deg) rotateX(' + (-y * 3) + 'deg)';
+    });
+
+    loginCard.addEventListener('mouseleave', function() {
+      loginCard.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+    });
+  }
+
+  // 4. Toast Notification System
+  function showToast(message, type) {
+    var toast = document.createElement('div');
+    toast.className = 'toast' + (type ? ' toast-' + type : '');
+    
+    var iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+    if (type === 'success') {
+      iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    }
+
+    toast.innerHTML = iconSvg + '<span>' + message + '</span>';
+    toastContainer.appendChild(toast);
+
+    // Trigger entrance animation
+    setTimeout(function() { toast.classList.add('active'); }, 20);
+
+    // Auto dismiss after 3.2s
+    setTimeout(function() {
+      toast.classList.remove('active');
+      setTimeout(function() {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }, 400);
+    }, 3200);
+  }
+
+  // 5. Show/Hide Password Toggle
+  togglePassBtn.addEventListener('click', function() {
+    var isPass = passInput.type === 'password';
+    passInput.type = isPass ? 'text' : 'password';
+    eyeOpen.style.display = isPass ? 'none' : 'block';
+    eyeClosed.style.display = isPass ? 'block' : 'none';
+    passInput.focus();
+  });
+
+  // 6. Forgot Password Link Toast
+  forgotPassLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    showToast('Password reset is not connected yet (Frontend Demo).', 'terra');
+  });
+
+  // 7. Form Validation Logic
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var bdPhoneRegex = /^(?:\+88|88)?(01[3-9]\d{8})$/;
+
+  function validateAccountField() {
+    var val = userInput.value.trim();
+    if (!val) {
+      setFieldError(groupEmail, 'Email or phone number is required');
+      return false;
+    }
+    var cleanPhone = val.replace(/[\s-]/g, '');
+    var isEmail = emailRegex.test(val);
+    var isPhone = bdPhoneRegex.test(cleanPhone);
+
+    if (!isEmail && !isPhone) {
+      setFieldError(groupEmail, 'Enter a valid email or 11-digit BD phone (+8801...)');
+      return false;
+    }
+    setFieldSuccess(groupEmail);
+    return true;
+  }
+
+  function validatePasswordField() {
+    var val = passInput.value;
+    if (!val) {
+      setFieldError(groupPassword, 'Password is required');
+      return false;
+    }
+    if (val.length < 8) {
+      setFieldError(groupPassword, 'Password must be at least 8 characters');
+      return false;
+    }
+    setFieldSuccess(groupPassword);
+    return true;
+  }
+
+  function setFieldError(group, msg) {
+    group.classList.remove('has-success');
+    group.classList.add('has-error');
+    var input = group.querySelector('.form-input');
+    if (input) input.setAttribute('aria-invalid', 'true');
+    var errEl = group.querySelector('.err-text');
+    if (errEl) errEl.textContent = msg;
+  }
+
+  function setFieldSuccess(group) {
+    group.classList.remove('has-error');
+    group.classList.add('has-success');
+    var input = group.querySelector('.form-input');
+    if (input) input.removeAttribute('aria-invalid');
+  }
+
+  userInput.addEventListener('blur', validateAccountField);
+  passInput.addEventListener('blur', validatePasswordField);
+
+  userInput.addEventListener('input', function() {
+    if (groupEmail.classList.contains('has-error')) {
+      groupEmail.classList.remove('has-error');
+    }
+  });
+  passInput.addEventListener('input', function() {
+    if (groupPassword.classList.contains('has-error')) {
+      groupPassword.classList.remove('has-error');
+    }
+  });
+
+  // 8. Button Ripple Click Effect
+  loginBtn.addEventListener('click', function(e) {
+    var rect = loginBtn.getBoundingClientRect();
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple-wave';
+    var size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    loginBtn.appendChild(ripple);
+    setTimeout(function() { if (ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 600);
+  });
+
+  // 9. Form Submission
+  loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var isAccountValid = validateAccountField();
+    var isPassValid = validatePasswordField();
+
+    if (!isAccountValid || !isPassValid) {
+      showToast('Please correct the highlighted fields.', 'error');
+      return;
+    }
+
+    loginBtn.classList.add('is-loading');
+    loginBtn.disabled = true;
+
+    try {
+      var rememberChecked = document.getElementById('rememberMe').checked;
+      if (rememberChecked) {
+        localStorage.setItem('dd_demo_user', JSON.stringify({
+          account: userInput.value.trim(),
+          loggedAt: new Date().toISOString()
+        }));
+      }
+    } catch (err) {}
+
+    // Simulate backend response after 1.2s
+    // DEMO ONLY: replace with fetch() to backend later.
+    setTimeout(function() {
+      loginBtn.classList.remove('is-loading');
+      loginBtn.classList.add('is-success');
+
+      showToast('Demo login successful! Redirecting...', 'success');
+
+      setTimeout(function() {
+        window.location.href = '../index.html';
+      }, 1000);
+    }, 1200);
+  });
+
+  /*
+  =============================================================================
+  BACKEND INTEGRATION BLUEPRINT (FOR FUTURE REAL API HOOKUP)
+  =============================================================================
+  async function submitLoginToBackend(payload) {
+    try {
+      const response = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Login failed');
+      return data;
+    } catch (error) {
+      showToast(error.message, 'error');
+      throw error;
+    }
+  }
+  =============================================================================
+  */
+
+})();
+</script>
+
+<script src="../haat-bg.js"></script>
 </body>
 </html>

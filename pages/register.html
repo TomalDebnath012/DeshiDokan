@@ -1,10 +1,2007 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - DeshiDokan</title>
+<meta charset="UTF-8">
+<script>try{if(sessionStorage.getItem('dd_intro')){document.documentElement.classList.add('no-intro')}else{sessionStorage.setItem('dd_intro','1')}}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create an Account — DeshiDokan | দেশীদোকান</title>
+<meta name="description" content="Join DeshiDokan as a Customer, Student Agent, or Heritage Producer across Bangladesh.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@500;600;700&display=swap" rel="stylesheet">
+<!--
+=============================================================================
+DeshiDokan — Register Page (Frontend-Only, Self-Contained)
+Sections:
+  1. Design Tokens & Reset
+  2. Ambient Background & Haat Bazar Integration
+  3. Intro Curtain Animation (Session-Aware)
+  4. Centered Frosted-Glass Card Layout
+  5. Floating Top-Left "Back to Home" Glass Pill
+  6. 3-Step Registration Wizard (Progress bar, Step indicators)
+     - Step 1: Role Selection (Customer, Student Agent, Producer)
+     - Step 2: Personal Details + Live Strength Meter + Dynamic Fields
+     - Step 3: Location / Verification Pending Notice + Terms & Conditions
+     - Success Screen: Animated SVG Check Draw & Theme Confetti
+  7. Responsive Breakpoints (360px to 1440px+)
+  8. Interactive JavaScript (Direction-aware slide transitions, Validation,
+     Strength evaluation, Confetti particle engine, Accessible controls)
+=============================================================================
+-->
+<style>
+.no-intro .intro{display:none!important}
+.bg-ambient{display:none}
+
+:root {
+  --forest: #1F4D36;
+  --forest-deep: #153827;
+  --forest-wash: #E6EFE8;
+  --cream: #F6F0E3;
+  --cream-2: #EFE6D2;
+  --white: #ffffff;
+  --terra: #C2693F;
+  --terra-wash: #F6E3D8;
+  --ink: #16201A;
+  --muted: #5B665F;
+  --border: #E1DACA;
+  --gold: #D4A347;
+  --gold-wash: #FAF2DF;
+  --error: #C24A3F;
+  --error-wash: #FDF0EE;
+  --success: #267A4F;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; height: 100%; }
+
+body {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(135deg, #F8F3E7 0%, #F3ECDA 50%, #E7EFE2 100%);
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  overflow-x: clip;
+  position: relative;
+}
+
+.bn { font-family: "Hind Siliguri", Inter, sans-serif; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* Background grid & ambient glow blobs */
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Intro Curtain */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: var(--forest-deep);
+  transition: transform 0.9s var(--ease) 0.1s, opacity 0.4s ease 1s;
+  animation: introOut 0s linear 1.6s forwards;
+  pointer-events: none;
+}
+.intro .ripple {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(246, 240, 227, 0.15);
+  animation: ripple 1.6s var(--ease) 0.1s forwards;
+}
+.intro-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--cream);
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  position: relative;
+}
+.intro-brand .mark {
+  width: 44px;
+  height: 44px;
+  animation: pop 0.7s var(--ease) both;
+}
+.intro-brand span.l {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: rise 0.5s var(--ease) forwards;
+}
+body.ready .intro {
+  transform: translateY(-100%);
+}
+@keyframes ripple { to { transform: scale(150); opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.4) rotate(-20deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+@keyframes rise { to { opacity: 1; transform: none; } }
+@keyframes introOut { to { visibility: hidden; } }
+
+/* Fixed Top-Left Back to Home Glass Pill */
+.nav-back-pill {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 10px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px -6px rgba(21, 56, 39, 0.16);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: transform 0.25s var(--ease), background-color 0.25s, box-shadow 0.25s;
+}
+.nav-back-pill:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 28px -6px rgba(21, 56, 39, 0.22);
+}
+.nav-back-pill:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+}
+.nav-logo-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo-mark svg {
+  width: 28px;
+  height: 28px;
+}
+.nav-brand-text {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--forest-deep);
+}
+.nav-brand-text b {
+  color: var(--terra);
+}
+.nav-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(22, 32, 26, 0.16);
+}
+.nav-back-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-back-pill:hover .nav-back-label {
+  color: var(--forest-deep);
+}
+.nav-back-label svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s var(--ease);
+}
+.nav-back-pill:hover .nav-back-label svg {
+  transform: translateX(-2px);
+}
+
+/* Centered Page Wrapper */
+.page-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  margin: auto;
+  perspective: 1000px;
+}
+
+/* Centered Card with Soft Faded Glass Look */
+.auth-card {
+  width: 100%;
+  max-width: 470px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.52) 100%);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 28px;
+  padding: 34px 34px 28px;
+  box-shadow: 
+    0 30px 80px -30px rgba(21, 56, 39, 0.35), 
+    0 0 120px 20px rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(10px);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.7s var(--ease), filter 0.7s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+body.ready .auth-card {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Staggered Form Entrance */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(6px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease), filter 0.6s var(--ease);
+}
+body.ready .stagger-item {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+body.ready .s-1 { transition-delay: 0.10s; }
+body.ready .s-2 { transition-delay: 0.18s; }
+body.ready .s-3 { transition-delay: 0.26s; }
+
+/* Wizard Stepper Header */
+.stepper-header {
+  margin-bottom: 20px;
+}
+.stepper-bar-track {
+  height: 5px;
+  background: var(--cream-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  position: relative;
+}
+.stepper-bar-fill {
+  height: 100%;
+  width: 33.333%;
+  background: linear-gradient(90deg, var(--forest), var(--terra));
+  border-radius: 999px;
+  transition: width 0.45s var(--ease);
+}
+
+.step-indicators {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.3s var(--ease);
+}
+.step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  transition: all 0.3s var(--ease);
+}
+.step-item.active {
+  color: var(--forest);
+  font-weight: 600;
+}
+.step-item.active .step-circle {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(31, 77, 54, 0.25);
+}
+.step-item.completed {
+  color: var(--forest);
+}
+.step-item.completed .step-circle {
+  border-color: var(--forest);
+  background: var(--forest);
+  color: #ffffff;
+}
+.step-circle svg {
+  display: none;
+  width: 14px;
+  height: 14px;
+}
+.step-item.completed .step-circle svg {
+  display: block;
+}
+.step-item.completed .step-circle span {
+  display: none;
+}
+
+/* Step Title / Subtitle */
+.step-head {
+  margin-bottom: 22px;
+}
+.step-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.25;
+}
+.step-desc {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* Wizard Steps Slider Container */
+.wizard-steps-container {
+  position: relative;
+  min-height: 330px;
+}
+.wizard-step {
+  display: none;
+  width: 100%;
+}
+.wizard-step.active {
+  display: block;
+  animation: stepInLeft 0.4s var(--ease) forwards;
+}
+.wizard-step.slide-in-right {
+  display: block;
+  animation: stepInRight 0.4s var(--ease) forwards;
+}
+.wizard-step.slide-in-left {
+  display: block;
+  animation: stepInLeft 0.4s var(--ease) forwards;
+}
+
+@keyframes stepInLeft {
+  from { opacity: 0; transform: translateX(28px); filter: blur(4px); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+@keyframes stepInRight {
+  from { opacity: 0; transform: translateX(-28px); filter: blur(4px); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+/* STEP 1: Role Selection Cards */
+.role-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.role-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), background 0.3s;
+  user-select: none;
+}
+.role-card:hover {
+  transform: translateY(-2px);
+  border-color: #C5BCAC;
+  box-shadow: 0 8px 18px -6px rgba(22, 32, 26, 0.08);
+}
+.role-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.role-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--cream);
+  color: var(--forest);
+  display: grid;
+  place-items: center;
+  transition: background 0.3s, color 0.3s;
+  flex-shrink: 0;
+}
+.role-icon-box svg {
+  width: 22px;
+  height: 22px;
+}
+.role-content {
+  flex: 1;
+}
+.role-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.role-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--terra-wash);
+  color: var(--terra);
+}
+.role-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+  line-height: 1.35;
+}
+.role-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  transition: all 0.3s var(--ease);
+  flex-shrink: 0;
+}
+.role-check svg {
+  width: 13px;
+  height: 13px;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 0.25s var(--ease);
+}
+
+/* Selected Role State (Forest BG, White text) */
+.role-card.selected {
+  background: var(--forest);
+  border-color: var(--forest);
+  box-shadow: 0 12px 24px -10px rgba(31, 77, 54, 0.45);
+}
+.role-card.selected .role-name {
+  color: #ffffff;
+}
+.role-card.selected .role-desc {
+  color: rgba(246, 240, 227, 0.85);
+}
+.role-card.selected .role-icon-box {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--cream);
+}
+.role-card.selected .role-badge {
+  background: rgba(194, 105, 63, 0.3);
+  color: var(--cream);
+}
+.role-card.selected .role-check {
+  background: var(--terra);
+  border-color: var(--terra);
+}
+.role-card.selected .role-check svg {
+  stroke-dashoffset: 0;
+}
+
+/* Form Fields & Floating Labels */
+.form-group {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  height: 50px;
+  padding: 16px 42px 0 16px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--ink);
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+}
+
+.form-select {
+  padding-top: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--muted);
+  width: 16px;
+  height: 16px;
+}
+
+.form-input:hover, .form-select:hover {
+  border-color: #C5BCAC;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--forest);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(31, 77, 54, 0.14);
+  outline: none;
+}
+
+.floating-label {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 0.25s var(--ease), color 0.25s var(--ease), font-size 0.25s var(--ease);
+}
+
+.form-input:focus ~ .floating-label,
+.form-input:not(:placeholder-shown) ~ .floating-label,
+.form-select:focus ~ .floating-label,
+.form-select:not([value=""]) ~ .floating-label,
+.has-value ~ .floating-label {
+  transform: translateY(-9px) scale(0.76);
+  color: var(--forest);
+  font-weight: 600;
+}
+
+/* Phone Input with Fixed +880 Prefix */
+.phone-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.phone-prefix {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--forest);
+  padding-right: 8px;
+  border-right: 1px solid var(--border);
+  line-height: 1;
+  pointer-events: none;
+}
+.phone-input-wrap .form-input {
+  padding-left: 68px;
+}
+.phone-input-wrap .floating-label {
+  left: 68px;
+}
+.phone-input-wrap .form-input:focus ~ .floating-label,
+.phone-input-wrap .form-input:not(:placeholder-shown) ~ .floating-label {
+  left: 14px;
+}
+
+/* Validation status classes */
+.form-group.has-error .form-input,
+.form-group.has-error .form-select {
+  border-color: var(--error) !important;
+  background-color: var(--error-wash);
+  box-shadow: 0 0 0 3px rgba(194, 74, 63, 0.15) !important;
+  animation: shake 0.35s ease-in-out;
+}
+.form-group.has-error .floating-label {
+  color: var(--error) !important;
+}
+
+.form-group.has-success .form-input,
+.form-group.has-success .form-select {
+  border-color: var(--success);
+}
+.form-group.has-success .valid-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.error-msg {
+  display: none;
+  font-size: 12px;
+  color: var(--error);
+  font-weight: 500;
+  margin-top: 4px;
+  margin-left: 4px;
+  animation: slideDown 0.25s var(--ease);
+}
+.form-group.has-error .error-msg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.valid-check {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.6);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--success);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.valid-check svg {
+  width: 12px;
+  height: 12px;
+}
+.input-wrap.has-toggle .valid-check {
+  right: 44px;
+}
+
+.input-action-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  transition: color 0.2s, background-color 0.2s;
+}
+.input-action-btn:hover {
+  color: var(--ink);
+  background: var(--cream-2);
+}
+.input-action-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* Password Strength Meter (4 Segments) */
+.strength-wrap {
+  margin: 6px 0 14px;
+}
+.strength-meter {
+  display: flex;
+  gap: 6px;
+  height: 4px;
+  margin-bottom: 6px;
+}
+.strength-segment {
+  flex: 1;
+  border-radius: 999px;
+  background: var(--cream-2);
+  transition: background-color 0.3s var(--ease);
+}
+.strength-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.strength-label {
+  font-weight: 600;
+}
+
+/* Strength Colors */
+.strength-1 .strength-segment:nth-child(1) { background: #E53935; }
+.strength-2 .strength-segment:nth-child(1),
+.strength-2 .strength-segment:nth-child(2) { background: #FB8C00; }
+.strength-3 .strength-segment:nth-child(1),
+.strength-3 .strength-segment:nth-child(2),
+.strength-3 .strength-segment:nth-child(3) { background: #D4A347; }
+.strength-4 .strength-segment:nth-child(1),
+.strength-4 .strength-segment:nth-child(2),
+.strength-4 .strength-segment:nth-child(3),
+.strength-4 .strength-segment:nth-child(4) { background: var(--success); }
+
+/* Dynamic Sliding Role Fields */
+.dynamic-fields-block {
+  overflow: hidden;
+  transition: all 0.35s var(--ease);
+}
+.dynamic-field {
+  animation: fieldSlideDown 0.35s var(--ease);
+}
+@keyframes fieldSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* STEP 3: Verification Pending Info Box (Student Agent & Producer) */
+.verification-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--gold-wash);
+  border: 1px solid rgba(212, 163, 71, 0.35);
+  color: #7A5714;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+.verification-card svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #D4A347;
+}
+.verification-card h4 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #5C410F;
+  margin-bottom: 2px;
+}
+.verification-card p {
+  font-size: 13px;
+  color: #7A5714;
+}
+
+/* Custom Checkbox for Terms */
+.terms-wrap {
+  margin: 18px 0 24px;
+}
+.custom-checkbox {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.checkbox-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.checkbox-box svg {
+  width: 12px;
+  height: 12px;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 0.25s var(--ease);
+}
+.custom-checkbox input:checked ~ .checkbox-box {
+  background: var(--forest);
+  border-color: var(--forest);
+  box-shadow: 0 2px 6px rgba(31, 77, 54, 0.3);
+}
+.custom-checkbox input:checked ~ .checkbox-box svg {
+  stroke-dashoffset: 0;
+}
+.custom-checkbox a {
+  color: var(--forest);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Wizard Button Bar */
+.wizard-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: transform 0.3s var(--ease), background-color 0.3s, box-shadow 0.3s;
+  user-select: none;
+}
+
+.btn-primary {
+  flex: 1;
+  background: var(--forest);
+  color: #ffffff;
+  box-shadow: 0 10px 22px -12px rgba(21, 56, 39, 0.8);
+}
+.btn-primary:hover {
+  background: var(--forest-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px -12px rgba(21, 56, 39, 0.9);
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s var(--ease);
+}
+.btn-primary:hover::after {
+  transform: translateX(120%);
+}
+
+.btn-back {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.btn-back:hover {
+  background: var(--cream);
+  border-color: #C5BCAC;
+  transform: translateY(-2px);
+}
+.btn-back svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Spinner for Submit */
+.btn-spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.btn.is-loading .btn-text { opacity: 0; }
+.btn.is-loading .btn-spinner { display: inline-block; position: absolute; }
+.btn.is-loading { pointer-events: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Ripple Effect */
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: btnRipple 0.6s linear;
+  pointer-events: none;
+}
+@keyframes btnRipple {
+  to { transform: scale(3.5); opacity: 0; }
+}
+
+/* Wizard Footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.auth-footer a {
+  color: var(--forest);
+  font-weight: 600;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+.auth-footer a:hover {
+  text-decoration: underline;
+  color: var(--forest-deep);
+}
+
+/* SUCCESS SCREEN & CONFETTI OVERLAY */
+.success-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 10px;
+  animation: fadeIn 0.5s var(--ease) forwards;
+}
+.success-screen.active {
+  display: flex;
+}
+
+.check-draw-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--forest-wash);
+  display: grid;
+  place-items: center;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 25px -8px rgba(31, 77, 54, 0.3);
+}
+.check-draw-svg {
+  width: 48px;
+  height: 48px;
+}
+.check-draw-svg path {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: checkDraw 0.7s 0.2s var(--ease) forwards;
+}
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+.success-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.success-desc {
+  font-size: 14.5px;
+  color: var(--muted);
+  max-width: 340px;
+  line-height: 1.45;
+  margin-bottom: 24px;
+}
+
+/* Confetti Particle Canvas */
+.confetti-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Toast Notifications Container */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: var(--forest-deep);
+  color: var(--cream);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 16px 36px -10px rgba(22, 32, 26, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transform: translateY(20px) scale(0.95);
+  opacity: 0;
+  transition: transform 0.35s var(--ease), opacity 0.35s var(--ease);
+}
+.toast.active { transform: translateY(0) scale(1); opacity: 1; }
+.toast.toast-error { background: var(--error); }
+.toast.toast-success { background: var(--success); }
+.toast.toast-terra { background: var(--terra); }
+.toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Responsive Breakpoints */
+@media (max-width: 600px) {
+  body {
+    padding: 70px 16px 24px;
+    align-items: flex-start;
+  }
+  .nav-back-pill {
+    top: 14px;
+    left: 14px;
+    padding: 7px 12px 7px 8px;
+  }
+  .nav-brand-text, .nav-divider {
+    display: none;
+  }
+  .nav-back-label span {
+    display: inline;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 28px 18px 22px;
+    border-radius: 24px;
+  }
+  .step-title {
+    font-size: 21px;
+  }
+  .role-card {
+    padding: 14px;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .intro { display: none !important; }
+  .auth-card { opacity: 1 !important; transform: none !important; filter: none !important; }
+  body.ready .stagger-item { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+</style>
 </head>
 <body>
+
+<!-- Ambient Grid & Glow Blobs -->
+<div class="bg-ambient" aria-hidden="true"></div>
+
+<!-- Top-Left Navigation Back Pill -->
+<a href="../index.html" class="nav-back-pill" aria-label="Back to home">
+  <span class="nav-logo-mark" aria-hidden="true">
+    <svg viewBox="0 0 40 40">
+      <rect width="40" height="40" rx="12" fill="#1F4D36"/>
+      <path d="M20 8c-1 4-6 6-6 12a6 6 0 0 0 12 0c0-6-5-8-6-12Z" fill="#F6F0E3"/>
+      <path d="M20 20v12M20 25l-4-3M20 28l4-3" stroke="#C2693F" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+    </svg>
+  </span>
+  <span class="nav-brand-text">Deshi<b>Dokan</b></span>
+  <span class="nav-divider" aria-hidden="true"></span>
+  <span class="nav-back-label">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    <span>Back to home</span>
+  </span>
+</a>
+
+<!-- Intro Curtain (Branded Entrance Animation) -->
+<div class="intro" id="introCurtain" aria-hidden="true">
+  <div class="ripple"></div>
+  <div class="intro-brand">
+    <svg class="mark" viewBox="0 0 40 40">
+      <rect width="40" height="40" rx="12" fill="#1F4D36"/>
+      <path d="M20 8c-1 4-6 6-6 12a6 6 0 0 0 12 0c0-6-5-8-6-12Z" fill="#F6F0E3"/>
+      <path d="M20 20v12M20 25l-4-3M20 28l4-3" stroke="#C2693F" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span id="introLetters"></span>
+  </div>
+</div>
+
+<!-- Toast Notifications Container -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<!-- Centered Screen Layout -->
+<main class="page-wrap">
+
+  <!-- Centered Wizard Card -->
+  <div class="auth-card" id="registerCard">
+    
+    <!-- Confetti Canvas for Successful Registration -->
+    <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+    <!-- Wizard Header: Progress Bar & Step Numbers -->
+    <header class="stepper-header stagger-item s-1" id="wizardHeader">
+      <div class="stepper-bar-track">
+        <div class="stepper-bar-fill" id="stepperBar"></div>
+      </div>
+      <div class="step-indicators" role="tablist">
+        <div class="step-item active" id="indicator1">
+          <div class="step-circle">
+            <span>1</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span>Role</span>
+        </div>
+        <div class="step-item" id="indicator2">
+          <div class="step-circle">
+            <span>2</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span>Details</span>
+        </div>
+        <div class="step-item" id="indicator3">
+          <div class="step-circle">
+            <span>3</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <span>Confirm</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Form (Novalidate, Frontend Only) -->
+    <form id="registerForm" novalidate>
+      
+      <div class="wizard-steps-container">
+
+        <!-- ==================== STEP 1: CHOOSE ROLE ==================== -->
+        <div class="wizard-step active" id="step1" data-step="1">
+          <div class="step-head">
+            <h1 class="step-title">Choose your role</h1>
+            <p class="step-desc">Select how you want to participate in DeshiDokan</p>
+          </div>
+
+          <div class="role-cards-grid" role="radiogroup" aria-label="Select your role">
+            
+            <!-- Role 1: Customer -->
+            <label class="role-card selected" id="cardCustomer">
+              <input type="radio" name="role" value="customer" checked>
+              <div class="role-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+              </div>
+              <div class="role-content">
+                <div class="role-name">
+                  <span>Customer</span>
+                  <span class="role-badge">Shopper</span>
+                </div>
+                <div class="role-desc">Explore &amp; purchase authentic regional foods, textiles &amp; crafts.</div>
+              </div>
+              <div class="role-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </label>
+
+            <!-- Role 2: Student Agent -->
+            <label class="role-card" id="cardAgent">
+              <input type="radio" name="role" value="student_agent">
+              <div class="role-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                </svg>
+              </div>
+              <div class="role-content">
+                <div class="role-name">
+                  <span>Student Agent</span>
+                  <span class="role-badge">Earn &amp; Deliver</span>
+                </div>
+                <div class="role-desc">Connect district artisans, verify authentic goods &amp; earn commissions.</div>
+              </div>
+              <div class="role-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </label>
+
+            <!-- Role 3: Producer -->
+            <label class="role-card" id="cardProducer">
+              <input type="radio" name="role" value="producer">
+              <div class="role-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </div>
+              <div class="role-content">
+                <div class="role-name">
+                  <span>Producer</span>
+                  <span class="role-badge">Artisan / Weaver</span>
+                </div>
+                <div class="role-desc">Sell your district’s traditional handicrafts, sweets &amp; native items.</div>
+              </div>
+              <div class="role-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- ==================== STEP 2: YOUR DETAILS ==================== -->
+        <div class="wizard-step" id="step2" data-step="2">
+          <div class="step-head">
+            <h2 class="step-title">Your details</h2>
+            <p class="step-desc">Enter your personal contact and security information</p>
+          </div>
+
+          <!-- Full Name -->
+          <div class="form-group" id="grpFullName">
+            <div class="input-wrap">
+              <input type="text" id="regFullName" name="full_name" class="form-input" placeholder=" " required>
+              <label for="regFullName" class="floating-label">Full Name</label>
+              <div class="valid-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="error-msg"><span class="err-text">Please enter your full name</span></div>
+          </div>
+
+          <!-- Email Address -->
+          <div class="form-group" id="grpEmail">
+            <div class="input-wrap">
+              <input type="email" id="regEmail" name="email" class="form-input" placeholder=" " required>
+              <label for="regEmail" class="floating-label">Email Address</label>
+              <div class="valid-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="error-msg"><span class="err-text">Enter a valid email address</span></div>
+          </div>
+
+          <!-- Phone Number (+880 prefix) -->
+          <div class="form-group" id="grpPhone">
+            <div class="phone-input-wrap">
+              <span class="phone-prefix">+880</span>
+              <input type="tel" id="regPhone" name="phone" class="form-input" placeholder=" " maxlength="10" required>
+              <label for="regPhone" class="floating-label">1XXXXXXXXX</label>
+              <div class="valid-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div class="error-msg"><span class="err-text">Enter a valid 10-digit number (e.g. 1712345678)</span></div>
+          </div>
+
+          <!-- Role-Specific Dynamic Fields (Slide In) -->
+          <div class="dynamic-fields-block" id="dynamicFieldsContainer"></div>
+
+          <!-- Password with 4-Segment Strength Meter -->
+          <div class="form-group" id="grpPassword">
+            <div class="input-wrap has-toggle">
+              <input type="password" id="regPassword" name="password" class="form-input" placeholder=" " required autocomplete="new-password">
+              <label for="regPassword" class="floating-label">Password</label>
+              <div class="valid-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <button type="button" class="input-action-btn toggle-pass-btn" data-target="regPassword" aria-label="Toggle password visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            
+            <!-- 4 Segment Strength Meter -->
+            <div class="strength-wrap" id="strengthWrap">
+              <div class="strength-meter">
+                <div class="strength-segment"></div>
+                <div class="strength-segment"></div>
+                <div class="strength-segment"></div>
+                <div class="strength-segment"></div>
+              </div>
+              <div class="strength-meta">
+                <span>Strength: <strong class="strength-label" id="strengthLabel">Too weak</strong></span>
+                <span>Min 8 chars, letter &amp; number</span>
+              </div>
+            </div>
+            <div class="error-msg"><span class="err-text">Password must be at least 8 characters with letters &amp; numbers</span></div>
+          </div>
+
+          <!-- Confirm Password with Match Indicator -->
+          <div class="form-group" id="grpConfirmPassword">
+            <div class="input-wrap has-toggle">
+              <input type="password" id="regConfirmPassword" class="form-input" placeholder=" " required autocomplete="new-password">
+              <label for="regConfirmPassword" class="floating-label">Confirm Password</label>
+              <div class="valid-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <button type="button" class="input-action-btn toggle-pass-btn" data-target="regConfirmPassword" aria-label="Toggle confirm password visibility">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <div class="error-msg"><span class="err-text">Passwords do not match</span></div>
+          </div>
+
+        </div>
+
+        <!-- ==================== STEP 3: DELIVERY & CONFIRM ==================== -->
+        <div class="wizard-step" id="step3" data-step="3">
+          <div class="step-head">
+            <h2 class="step-title">Delivery &amp; confirm</h2>
+            <p class="step-desc">Review your district setup and finalize registration</p>
+          </div>
+
+          <!-- Dynamic Container for Customer Address vs Agent/Producer Notice -->
+          <div id="step3DynamicContent"></div>
+
+          <!-- Terms & Conditions Checkbox -->
+          <div class="terms-wrap">
+            <label class="custom-checkbox">
+              <input type="checkbox" name="terms" id="termsCheck" required>
+              <span class="checkbox-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span>I agree to DeshiDokan's <a href="#" id="termsLink">Terms of Service</a> &amp; <a href="#" id="privacyLink">Privacy Policy</a>.</span>
+            </label>
+            <div class="error-msg" id="termsError"><span class="err-text">You must agree to the terms to continue</span></div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Wizard Navigation Actions (Back / Next / Create Account) -->
+      <div class="wizard-actions">
+        <button type="button" class="btn-back" id="prevBtn" style="display:none;" aria-label="Go to previous step">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        
+        <button type="button" class="btn btn-primary" id="nextBtn">
+          <span class="btn-text">Continue</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn" style="display:none;">
+          <span class="btn-text">Create account</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- SUCCESS SCREEN (Draws animated check and launches confetti) -->
+    <div class="success-screen" id="successScreen">
+      <div class="check-draw-wrap">
+        <svg class="check-draw-svg" viewBox="0 0 52 52">
+          <circle cx="26" cy="26" r="24" fill="none" stroke="#1F4D36" stroke-width="3" opacity="0.2"/>
+          <path fill="none" stroke="#1F4D36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M14 27l8 8 16-16"/>
+        </svg>
+      </div>
+      <h2 class="success-title">Welcome to DeshiDokan!</h2>
+      <p class="success-desc">Your account has been prepared. You are now part of Bangladesh’s premier 64-district heritage network.</p>
+      <a href="login.html" class="btn btn-primary" style="width: auto; padding: 0 32px;">
+        <span>Proceed to Log in</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Footer: Link to Login -->
+    <footer class="auth-footer" id="wizardFooter">
+      <span>Already have an account?</span>
+      <a href="login.html">Log in</a>
+    </footer>
+
+  </div>
+
+</main>
+
+<!-- Vanilla JavaScript (Wizard Engine, Validation, Confetti & Tilt) -->
+<script>
+(function() {
+  'use strict';
+
+  // 1. DOM Elements
+  var body = document.body;
+  var introCurtain = document.getElementById('introCurtain');
+  var introLetters = document.getElementById('introLetters');
+  var registerForm = document.getElementById('registerForm');
+  var wizardHeader = document.getElementById('wizardHeader');
+  var wizardFooter = document.getElementById('wizardFooter');
+  var successScreen = document.getElementById('successScreen');
+  var stepperBar = document.getElementById('stepperBar');
+  var nextBtn = document.getElementById('nextBtn');
+  var prevBtn = document.getElementById('prevBtn');
+  var submitBtn = document.getElementById('submitBtn');
+  var registerCard = document.getElementById('registerCard');
+  var toastContainer = document.getElementById('toastContainer');
+  var dynamicFieldsContainer = document.getElementById('dynamicFieldsContainer');
+  var step3DynamicContent = document.getElementById('step3DynamicContent');
+  var confettiCanvas = document.getElementById('confettiCanvas');
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var currentStep = 1;
+  var selectedRole = 'customer';
+
+  // 2. Intro Curtain Letter Animation
+  var skip = document.documentElement.classList.contains('no-intro');
+  if (!prefersReduced && !skip && introLetters) {
+    var brandName = 'DeshiDokan';
+    brandName.split('').forEach(function(letter, i) {
+      var span = document.createElement('span');
+      span.className = 'l';
+      span.textContent = letter;
+      span.style.animationDelay = (0.2 + i * 0.05) + 's';
+      introLetters.appendChild(span);
+    });
+    setTimeout(function() { body.classList.add('ready'); }, 1100);
+  } else {
+    body.classList.add('ready');
+    if (introCurtain) introCurtain.style.display = 'none';
+  }
+
+  // 3. Subtle 3D Tilt on Register Card (max 3deg, desktop only)
+  if (!prefersReduced && registerCard && window.innerWidth > 900) {
+    registerCard.addEventListener('mousemove', function(e) {
+      var rect = registerCard.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      registerCard.style.transform = 'perspective(1000px) rotateY(' + (x * 3) + 'deg) rotateX(' + (-y * 3) + 'deg)';
+    });
+    registerCard.addEventListener('mouseleave', function() {
+      registerCard.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+    });
+  }
+
+  // 4. Toast Notifications
+  function showToast(message, type) {
+    var toast = document.createElement('div');
+    toast.className = 'toast' + (type ? ' toast-' + type : '');
+    var iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+    if (type === 'success') {
+      iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+    }
+    toast.innerHTML = iconSvg + '<span>' + message + '</span>';
+    toastContainer.appendChild(toast);
+    setTimeout(function() { toast.classList.add('active'); }, 20);
+    setTimeout(function() {
+      toast.classList.remove('active');
+      setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 400);
+    }, 3200);
+  }
+
+  // 5. Role Selection Handling (Radio Cards)
+  var roleCards = document.querySelectorAll('.role-card');
+  roleCards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      roleCards.forEach(function(c) { c.classList.remove('selected'); });
+      card.classList.add('selected');
+      var radio = card.querySelector('input[type="radio"]');
+      radio.checked = true;
+      selectedRole = radio.value;
+      updateRoleSpecificUI();
+    });
+  });
+
+  // 6. Update UI Based on Selected Role
+  var districtsBD = [
+    "Bagerhat","Bandarban","Barguna","Barishal","Bhola","Bogura","Brahmanbaria","Chandpur",
+    "Chattogram","Chuadanga","Cox's Bazar","Cumilla","Dhaka","Dinajpur","Faridpur","Feni",
+    "Gaibandha","Gazipur","Gopalganj","Habiganj","Jamalpur","Jashore","Jhalokathi","Jhenaidah",
+    "Joypurhat","Khagrachhari","Khulna","Kishoreganj","Kurigram","Kushtia","Lakshmipur","Lalmonirhat",
+    "Madaripur","Magura","Manikganj","Meherpur","Moulvibazar","Munshiganj","Mymensingh","Naogaon",
+    "Narail","Narayanganj","Narsingdi","Natore","Netrokona","Nilphamari","Noakhali","Pabna",
+    "Panchagarh","Patuakhali","Pirojpur","Rajbari","Rajshahi","Rangamati","Rangpur","Satkhira",
+    "Shariatpur","Sherpur","Sirajganj","Sunamganj","Sylhet","Tangail","Thakurgaon"
+  ];
+
+  function getDistrictOptions() {
+    var opts = '<option value="">Select District</option>';
+    districtsBD.forEach(function(d) {
+      opts += '<option value="' + d + '">' + d + '</option>';
+    });
+    return opts;
+  }
+
+  function updateRoleSpecificUI() {
+    // Dynamic fields for Step 2
+    if (selectedRole === 'student_agent') {
+      dynamicFieldsContainer.innerHTML = 
+        '<div class="dynamic-field form-group" id="grpUniversity">' +
+          '<div class="input-wrap">' +
+            '<input type="text" id="regUniversity" name="university" class="form-input" placeholder=" " required>' +
+            '<label for="regUniversity" class="floating-label">University / College Name</label>' +
+            '<div class="valid-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please enter your university name</span></div>' +
+        '</div>' +
+        '<div class="dynamic-field form-group" id="grpStudentID">' +
+          '<div class="input-wrap">' +
+            '<input type="text" id="regStudentID" name="student_id" class="form-input" placeholder=" " required>' +
+            '<label for="regStudentID" class="floating-label">Student ID Number</label>' +
+            '<div class="valid-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please enter your student ID</span></div>' +
+        '</div>' +
+        '<div class="dynamic-field form-group" id="grpHomeDistrict">' +
+          '<div class="input-wrap">' +
+            '<select id="regDistrict" name="district" class="form-select" required>' +
+              getDistrictOptions() +
+            '</select>' +
+            '<label for="regDistrict" class="floating-label has-value">Home District</label>' +
+            '<svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please select your home district</span></div>' +
+        '</div>';
+    } else if (selectedRole === 'producer') {
+      dynamicFieldsContainer.innerHTML = 
+        '<div class="dynamic-field form-group" id="grpShopName">' +
+          '<div class="input-wrap">' +
+            '<input type="text" id="regShopName" name="shop_name" class="form-input" placeholder=" " required>' +
+            '<label for="regShopName" class="floating-label">Workshop / Shop Name</label>' +
+            '<div class="valid-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please enter your workshop or shop name</span></div>' +
+        '</div>' +
+        '<div class="dynamic-field form-group" id="grpProducerDistrict">' +
+          '<div class="input-wrap">' +
+            '<select id="regDistrict" name="district" class="form-select" required>' +
+              getDistrictOptions() +
+            '</select>' +
+            '<label for="regDistrict" class="floating-label has-value">Production District</label>' +
+            '<svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please select your district</span></div>' +
+        '</div>';
+    } else {
+      dynamicFieldsContainer.innerHTML = '';
+    }
+
+    // Dynamic fields for Step 3
+    if (selectedRole === 'customer') {
+      step3DynamicContent.innerHTML = 
+        '<div class="form-group" id="grpDivision">' +
+          '<div class="input-wrap">' +
+            '<select id="regDivision" name="division" class="form-select" required>' +
+              '<option value="">Select Division</option>' +
+              '<option value="Dhaka">Dhaka</option>' +
+              '<option value="Chattogram">Chattogram</option>' +
+              '<option value="Rajshahi">Rajshahi</option>' +
+              '<option value="Khulna">Khulna</option>' +
+              '<option value="Barishal">Barishal</option>' +
+              '<option value="Sylhet">Sylhet</option>' +
+              '<option value="Rangpur">Rangpur</option>' +
+              '<option value="Mymensingh">Mymensingh</option>' +
+            '</select>' +
+            '<label for="regDivision" class="floating-label has-value">Division</label>' +
+            '<svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please select your division</span></div>' +
+        '</div>' +
+        '<div class="form-group" id="grpCustDistrict">' +
+          '<div class="input-wrap">' +
+            '<select id="regCustDistrict" name="district" class="form-select" required>' +
+              getDistrictOptions() +
+            '</select>' +
+            '<label for="regCustDistrict" class="floating-label has-value">Delivery District</label>' +
+            '<svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please select your district</span></div>' +
+        '</div>' +
+        '<div class="form-group" id="grpAddress">' +
+          '<div class="input-wrap">' +
+            '<input type="text" id="regAddress" name="address" class="form-input" placeholder=" " required>' +
+            '<label for="regAddress" class="floating-label">Delivery Street Address</label>' +
+            '<div class="valid-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+          '</div>' +
+          '<div class="error-msg"><span class="err-text">Please provide your address</span></div>' +
+        '</div>';
+    } else {
+      var roleTitle = selectedRole === 'student_agent' ? 'Student Agent' : 'Heritage Producer';
+      step3DynamicContent.innerHTML = 
+        '<div class="verification-card">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' +
+          '</svg>' +
+          '<div>' +
+            '<h4>Verification Pending Notice</h4>' +
+            '<p>Your application as a <strong>' + roleTitle + '</strong> will be reviewed by our team within 24 hours. You can explore the platform immediately after submission.</p>' +
+          '</div>' +
+        '</div>';
+    }
+  }
+  updateRoleSpecificUI();
+
+  // 7. Password Strength Evaluator (4-segment)
+  var regPassword = document.getElementById('regPassword');
+  var strengthWrap = document.getElementById('strengthWrap');
+  var strengthLabel = document.getElementById('strengthLabel');
+
+  function evaluatePasswordStrength(val) {
+    if (!val) {
+      strengthWrap.className = 'strength-wrap';
+      strengthLabel.textContent = 'Too weak';
+      strengthLabel.style.color = 'var(--muted)';
+      return 0;
+    }
+    var score = 0;
+    if (val.length >= 8) score++;
+    if (/[a-zA-Z]/.test(val) && /\d/.test(val)) score++;
+    if (val.length >= 10 && /[A-Z]/.test(val)) score++;
+    if (/[^a-zA-Z0-9]/.test(val)) score++;
+
+    strengthWrap.className = 'strength-wrap strength-' + score;
+    var labels = ['Too weak', 'Weak', 'Fair', 'Strong', 'Very strong'];
+    var colors = ['var(--muted)', '#E53935', '#FB8C00', '#D4A347', 'var(--success)'];
+    strengthLabel.textContent = labels[score];
+    strengthLabel.style.color = colors[score];
+    return score;
+  }
+
+  regPassword.addEventListener('input', function() {
+    evaluatePasswordStrength(regPassword.value);
+  });
+
+  // 8. Password Visibility Toggles
+  document.querySelectorAll('.toggle-pass-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var targetId = btn.getAttribute('data-target');
+      var input = document.getElementById(targetId);
+      if (input) {
+        input.type = input.type === 'password' ? 'text' : 'password';
+      }
+    });
+  });
+
+  // 9. Validation Helpers
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function markError(id, msg) {
+    var grp = document.getElementById(id);
+    if (!grp) return;
+    grp.classList.remove('has-success');
+    grp.classList.add('has-error');
+    var txt = grp.querySelector('.err-text');
+    if (txt && msg) txt.textContent = msg;
+  }
+  function markSuccess(id) {
+    var grp = document.getElementById(id);
+    if (!grp) return;
+    grp.classList.remove('has-error');
+    grp.classList.add('has-success');
+  }
+
+  function validateStep(stepNum) {
+    var valid = true;
+
+    if (stepNum === 1) {
+      return true;
+    }
+
+    if (stepNum === 2) {
+      var nameVal = document.getElementById('regFullName').value.trim();
+      if (!nameVal) { markError('grpFullName', 'Full name is required'); valid = false; }
+      else markSuccess('grpFullName');
+
+      var emailVal = document.getElementById('regEmail').value.trim();
+      if (!emailVal || !emailRegex.test(emailVal)) { markError('grpEmail', 'Enter a valid email'); valid = false; }
+      else markSuccess('grpEmail');
+
+      var phoneVal = document.getElementById('regPhone').value.trim();
+      if (!phoneVal || !/^[1-9]\d{9}$/.test(phoneVal)) { markError('grpPhone', 'Enter 10 digits (e.g. 1712345678)'); valid = false; }
+      else markSuccess('grpPhone');
+
+      var passVal = regPassword.value;
+      if (!passVal || passVal.length < 8 || !(/[a-zA-Z]/.test(passVal) && /\d/.test(passVal))) {
+        markError('grpPassword', 'Min 8 chars with letter & number');
+        valid = false;
+      } else {
+        markSuccess('grpPassword');
+      }
+
+      var confirmVal = document.getElementById('regConfirmPassword').value;
+      if (!confirmVal || confirmVal !== passVal) {
+        markError('grpConfirmPassword', 'Passwords do not match');
+        valid = false;
+      } else {
+        markSuccess('grpConfirmPassword');
+      }
+
+      if (selectedRole === 'student_agent') {
+        var uni = document.getElementById('regUniversity');
+        if (uni && !uni.value.trim()) { markError('grpUniversity', 'University is required'); valid = false; }
+        else if (uni) markSuccess('grpUniversity');
+
+        var sid = document.getElementById('regStudentID');
+        if (sid && !sid.value.trim()) { markError('grpStudentID', 'Student ID is required'); valid = false; }
+        else if (sid) markSuccess('grpStudentID');
+
+        var dist = document.getElementById('regDistrict');
+        if (dist && !dist.value) { markError('grpHomeDistrict', 'Please select district'); valid = false; }
+        else if (dist) markSuccess('grpHomeDistrict');
+      } else if (selectedRole === 'producer') {
+        var shop = document.getElementById('regShopName');
+        if (shop && !shop.value.trim()) { markError('grpShopName', 'Shop/Workshop is required'); valid = false; }
+        else if (shop) markSuccess('grpShopName');
+
+        var pdist = document.getElementById('regDistrict');
+        if (pdist && !pdist.value) { markError('grpProducerDistrict', 'Please select district'); valid = false; }
+        else if (pdist) markSuccess('grpProducerDistrict');
+      }
+    }
+
+    if (stepNum === 3) {
+      if (selectedRole === 'customer') {
+        var divEl = document.getElementById('regDivision');
+        if (divEl && !divEl.value) { markError('grpDivision', 'Please select division'); valid = false; }
+        else if (divEl) markSuccess('grpDivision');
+
+        var cdist = document.getElementById('regCustDistrict');
+        if (cdist && !cdist.value) { markError('grpCustDistrict', 'Please select district'); valid = false; }
+        else if (cdist) markSuccess('grpCustDistrict');
+
+        var addr = document.getElementById('regAddress');
+        if (addr && !addr.value.trim()) { markError('grpAddress', 'Address is required'); valid = false; }
+        else if (addr) markSuccess('grpAddress');
+      }
+
+      var terms = document.getElementById('termsCheck');
+      var termsErr = document.getElementById('termsError');
+      if (!terms.checked) {
+        termsErr.style.display = 'block';
+        valid = false;
+      } else {
+        termsErr.style.display = 'none';
+      }
+    }
+
+    return valid;
+  }
+
+  // 10. Step Navigation Transitions
+  function goToStep(targetStep, direction) {
+    var currentEl = document.getElementById('step' + currentStep);
+    var targetEl = document.getElementById('step' + targetStep);
+
+    currentEl.classList.remove('active', 'slide-in-left', 'slide-in-right');
+    currentEl.style.display = 'none';
+
+    targetEl.style.display = 'block';
+    targetEl.classList.remove('slide-in-left', 'slide-in-right');
+    targetEl.classList.add(direction === 'forward' ? 'slide-in-left' : 'slide-in-right');
+
+    for (var i = 1; i <= 3; i++) {
+      var ind = document.getElementById('indicator' + i);
+      if (i < targetStep) {
+        ind.className = 'step-item completed';
+      } else if (i === targetStep) {
+        ind.className = 'step-item active';
+      } else {
+        ind.className = 'step-item';
+      }
+    }
+
+    stepperBar.style.width = (targetStep / 3 * 100) + '%';
+
+    if (targetStep === 1) {
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'inline-flex';
+      submitBtn.style.display = 'none';
+    } else if (targetStep === 2) {
+      prevBtn.style.display = 'grid';
+      nextBtn.style.display = 'inline-flex';
+      submitBtn.style.display = 'none';
+    } else if (targetStep === 3) {
+      prevBtn.style.display = 'grid';
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'inline-flex';
+    }
+
+    currentStep = targetStep;
+  }
+
+  nextBtn.addEventListener('click', function() {
+    if (!validateStep(currentStep)) {
+      showToast('Please correct highlighted fields before continuing', 'error');
+      return;
+    }
+    if (currentStep < 3) {
+      goToStep(currentStep + 1, 'forward');
+    }
+  });
+
+  prevBtn.addEventListener('click', function() {
+    if (currentStep > 1) {
+      goToStep(currentStep - 1, 'backward');
+    }
+  });
+
+  document.getElementById('termsLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    showToast('Terms of Service dialog (Frontend Demo).', 'terra');
+  });
+  document.getElementById('privacyLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    showToast('Privacy Policy dialog (Frontend Demo).', 'terra');
+  });
+
+  // 11. Confetti Particle Engine
+  function launchConfetti() {
+    if (prefersReduced) return;
+    var ctx = confettiCanvas.getContext('2d');
+    var width = confettiCanvas.width = registerCard.offsetWidth;
+    var height = confettiCanvas.height = registerCard.offsetHeight;
+    var particles = [];
+    var colors = ['#1F4D36', '#C2693F', '#D4A347', '#6AA064', '#F6F0E3'];
+
+    for (var i = 0; i < 65; i++) {
+      particles.push({
+        x: width / 2,
+        y: height / 2 - 20,
+        vx: (Math.random() - 0.5) * 12,
+        vy: (Math.random() - 0.7) * 14,
+        size: 5 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rSpeed: (Math.random() - 0.5) * 8,
+        shape: Math.random() > 0.4 ? 'diamond' : 'circle',
+        alpha: 1
+      });
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+      var alive = false;
+      particles.forEach(function(p) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35;
+        p.rotation += p.rSpeed;
+        p.alpha -= 0.012;
+        if (p.alpha > 0) alive = true;
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(p.alpha, 0);
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+
+        if (p.shape === 'diamond') {
+          ctx.beginPath();
+          ctx.moveTo(0, -p.size);
+          ctx.lineTo(p.size, 0);
+          ctx.lineTo(0, p.size);
+          ctx.lineTo(-p.size, 0);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+
+      if (alive) requestAnimationFrame(render);
+      else ctx.clearRect(0, 0, width, height);
+    }
+    render();
+  }
+
+  // 12. Form Submission Handling
+  registerForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    if (!validateStep(3)) {
+      showToast('Please agree to terms and review requirements', 'error');
+      return;
+    }
+
+    submitBtn.classList.add('is-loading');
+    submitBtn.disabled = true;
+
+    try {
+      localStorage.setItem('dd_demo_registered_user', JSON.stringify({
+        fullName: document.getElementById('regFullName').value.trim(),
+        role: selectedRole,
+        registeredAt: new Date().toISOString()
+      }));
+    } catch (err) {}
+
+    // Simulate backend response after 1.2s
+    // DEMO ONLY: replace with fetch() to backend later.
+    setTimeout(function() {
+      submitBtn.classList.remove('is-loading');
+      registerForm.style.display = 'none';
+      wizardHeader.style.display = 'none';
+      wizardFooter.style.display = 'none';
+      successScreen.classList.add('active');
+
+      launchConfetti();
+      showToast('Registration successful! Welcome to DeshiDokan.', 'success');
+    }, 1200);
+  });
+
+  /*
+  =============================================================================
+  BACKEND INTEGRATION BLUEPRINT (FOR FUTURE REAL API HOOKUP)
+  =============================================================================
+  async function submitRegistrationToBackend(formData) {
+    try {
+      const response = await fetch('/api/v1/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Registration failed');
+      return data;
+    } catch (error) {
+      showToast(error.message, 'error');
+      throw error;
+    }
+  }
+  =============================================================================
+  */
+
+})();
+</script>
+
+<script src="../haat-bg.js"></script>
 </body>
 </html>

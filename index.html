@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>try{if(sessionStorage.getItem('dd_intro')){document.documentElement.classList.add('no-intro')}else{sessionStorage.setItem('dd_intro','1')}}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DeshiDokan — Heritage Products from the 64 Districts of Bangladesh</title>
 <meta name="description" content="Explore authentic traditional foods, clothing and handicrafts from across Bangladesh, connecting local producers with customers through DeshiDokan.">
@@ -24,6 +25,7 @@ a{color:inherit;text-decoration:none}ul{list-style:none}button{font:inherit;curs
 :focus-visible{outline:2px solid var(--forest);outline-offset:3px;border-radius:8px}
 
 /* intro */
+.no-intro .intro{display:none!important}
 .intro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:var(--forest-deep);transition:transform .9s var(--ease) .1s,opacity .4s ease 1s;animation:introOut 0s linear 2.1s forwards}
 .intro .ripple{position:absolute;width:20px;height:20px;border-radius:50%;background:rgba(246,240,227,.12);animation:ripple 1.8s var(--ease) .2s forwards}
 .intro-brand{display:flex;align-items:center;gap:12px;color:var(--cream);font-size:2rem;font-weight:600;letter-spacing:-.03em;position:relative}
@@ -105,10 +107,8 @@ body.ready .hero .br{opacity:1;transform:none;filter:none;transition-delay:calc(
 
 /* hero art */
 .art{position:relative;max-width:30rem;margin:0 auto;width:100%;perspective:1200px}
-.art-frame{position:relative;border-radius:32px;overflow:hidden;border:6px solid rgba(255,255,255,.85);box-shadow:0 40px 80px -40px rgba(21,56,39,.55);aspect-ratio:4/5;background:#cfe0c6;clip-path:inset(0 0 100% 0 round 32px);transition:clip-path 1.4s var(--ease) 2.5s;transform-style:preserve-3d}
-body.ready .art-frame{clip-path:inset(0 0 0 0 round 32px)}
-.art-frame svg{width:100%;height:100%;display:block;transform:scale(1.12);transition:transform 2.2s var(--ease) 2.5s}
-body.ready .art-frame svg{transform:scale(1)}
+.art-frame{position:relative;border-radius:32px;overflow:hidden;aspect-ratio:4/5;transform-style:preserve-3d;background:transparent;border:0;box-shadow:none;clip-path:none!important}
+body.ready .art-frame{clip-path:none!important}
 .chip{position:absolute;display:flex;align-items:center;gap:10px;padding:10px 14px 10px 10px;border-radius:16px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.9);box-shadow:0 18px 40px -20px rgba(22,32,26,.45);font-size:13px;opacity:0;transform:translateY(16px)}
 body.ready .chip{animation:chipIn .9s var(--ease) forwards,bob 6s ease-in-out infinite;animation-delay:3.4s,4.3s}
 .chip.c2{animation-delay:3.7s,5s!important}.chip.c3{animation-delay:4s,5.6s!important}
@@ -125,6 +125,12 @@ body.ready .scroll-cue{opacity:1}
 .scroll-cue i{width:1px;height:28px;background:linear-gradient(var(--forest),transparent);animation:cue 1.8s ease-in-out infinite}
 @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 @media(min-width:1024px){.scroll-cue{display:flex}}
+
+/* no-intro instant animation timings */
+.no-intro .ch{transition-delay:calc(var(--i)*28ms + .1s)!important}
+.no-intro body.ready .hero .br{transition-delay:calc(.1s + var(--d,0)*.12s)!important}
+.no-intro .art-frame,.no-intro .art-frame svg,.no-intro .scroll-cue{transition-delay:.2s!important}
+.no-intro .chip.c1,.no-intro .chip.c2,.no-intro .chip.c3{animation-delay:.3s,1.2s!important}
 
 /* marquee */
 .marquee{overflow:hidden;border-block:1px solid var(--border);background:rgba(255,255,255,.5);padding:14px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
@@ -403,7 +409,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
     <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h10.2L20 7H6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="1.4" fill="currentColor"/><circle cx="17" cy="19.5" r="1.4" fill="currentColor"/></symbol>
-  </defs><symbol id="i-map" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></g></symbol><symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></g></symbol><symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.4 2.7-6 6-6s6 2.6 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M17 14c2.4 0 4 1.8 4 4.5"/></g></symbol><symbol id="i-cap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5"/></g></symbol><symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></g></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 10 10 5 20 4c0 10-5 15-14 15z"/><path d="M5 19c3-5 6-8 10-10"/></g></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></g></symbol><symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/></g></symbol><symbol id="i-thread" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4.5 9c5 2 10 2 15 0M4.5 15c5-2 10-2 15 0"/></g></symbol><symbol id="i-cup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5z"/><path d="M17 10h2a2 2 0 0 1 0 4h-2"/><path d="M9 3c0 1.5-1 1.5-1 3M13 3c0 1.5-1 1.5-1 3"/></g></symbol><symbol id="i-pot" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5h8M7 5c-3 3-3 11 2 14h6c5-3 5-11 2-14"/><path d="M6.5 11h11"/></g></symbol><symbol id="i-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></g></symbol><symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></g></symbol><symbol id="i-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></g></symbol><symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/></g></symbol><symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></g></symbol><symbol id="i-store" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 12v8h14v-8"/></g></symbol></svg>
+  </defs><symbol id="i-map" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></g></symbol><symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></g></symbol><symbol id="i-users" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.4 2.7-6 6-6s6 2.6 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M17 14c2.4 0 4 1.8 4 4.5"/></g></symbol><symbol id="i-cap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5"/></g></symbol><symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></g></symbol><symbol id="i-leaf" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 10 10 5 20 4c0 10-5 15-14 15z"/><path d="M5 19c3-5 6-8 10-10"/></g></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></g></symbol><symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/></g></symbol><symbol id="i-thread" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4.5 9c5 2 10 2 15 0M4.5 15c5-2 10-2 15 0"/></g></symbol><symbol id="i-cup" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5z"/><path d="M17 10h2a2 2 0 0 1 0 4h-2"/><path d="M9 3c0 1.5-1 1.5-1 3M13 3c0 1.5-1 1.5-1 3"/></g></symbol><symbol id="i-pot" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5h8M7 5c-3 3-3 11 2 14h6c5-3 5-11 2-14"/><path d="M6.5 11h11"/></g></symbol><symbol id="i-box" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></g></symbol><symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></g></symbol><symbol id="i-cart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19.5" r="1.4" fill="currentColor"/><circle cx="17" cy="19.5" r="1.4" fill="currentColor"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/></g></symbol><symbol id="i-chart" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></g></symbol><symbol id="i-store" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 12v8h14v-8"/></g></symbol></svg>
 
 <div class="intro" aria-hidden="true">
   <div class="ripple"></div>
@@ -416,7 +422,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
 <header class="top">
   <div class="nav-shell" id="navShell">
     <nav class="main" aria-label="Main">
-      <a class="brand" href="index.php" aria-label="DeshiDokan home"><svg><use href="#logo"/></svg>Deshi<b>Dokan</b></a>
+      <a class="brand" href="index.html" aria-label="DeshiDokan home"><svg><use href="#logo"/></svg>Deshi<b>Dokan</b></a>
       <ul class="links">
         <li><a href="#journey">Journey</a></li>
         <li><a href="#districts">Districts</a></li>
@@ -427,15 +433,15 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
       </ul>
       <div class="nav-right">
         <!-- Existing integration points: keep your real URLs here -->
-        <a class="icon-btn" href="cart.php" id="cartLink" aria-label="Cart"><svg><use href="#cart"/></svg><span class="cart-count" id="cartCount">0</span></a>
-        <a class="btn btn-ghost btn-sm hide-sm" href="login.php" id="loginLink">Log in</a>
-        <a class="btn btn-primary btn-sm hide-sm" href="products.php">Explore Products</a>
+        <a class="icon-btn" href="pages/cart.html" id="cartLink" aria-label="Cart"><svg><use href="#cart"/></svg><span class="cart-count" id="cartCount">0</span></a>
+        <a class="btn btn-ghost btn-sm hide-sm" href="pages/login.html" id="loginLink">Log in</a>
+        <a class="btn btn-primary btn-sm hide-sm" href="pages/products.html">Explore Products</a>
         <button class="icon-btn burger" id="burger" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
           <span style="position:relative;display:block;width:16px;height:12px"><i style="position:absolute;left:0;top:0;width:16px;height:2px;background:#16201A;border-radius:2px"></i><i style="position:absolute;left:0;top:5px;width:16px;height:2px;background:#16201A;border-radius:2px"></i><i style="position:absolute;left:0;top:10px;width:16px;height:2px;background:#16201A;border-radius:2px"></i></span>
         </button>
       </div>
     </nav>
-    <div class="mobile-menu" id="mobileMenu"><a href="#journey">Journey</a><a href="#districts">Districts</a><a href="#shop">Shop</a><a href="#roles">Roles</a><a href="#agents">Student agents</a><a href="#faq">FAQ</a><a href="login.php">Log in</a><a href="products.php">Explore Products</a></div>
+    <div class="mobile-menu" id="mobileMenu"><a href="#journey">Journey</a><a href="#districts">Districts</a><a href="#shop">Shop</a><a href="#roles">Roles</a><a href="#agents">Student agents</a><a href="#faq">FAQ</a><a href="pages/login.html">Log in</a><a href="pages/products.html">Explore Products</a></div>
   </div>
 </header>
 
@@ -455,7 +461,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
         <p class="bn bn-line" lang="bn">প্রতিটি জেলার ঐতিহ্য, আপনার দরজায়।</p>
       </div>
       <div class="br cta" style="--d:2">
-        <a class="btn btn-primary" href="products.php">Explore Products <svg width="18" height="18"><use href="#arrow"/></svg></a>
+        <a class="btn btn-primary" href="pages/products.html">Explore Products <svg width="18" height="18"><use href="#arrow"/></svg></a>
         <a class="btn btn-ghost" href="#districts">Discover Districts</a>
       </div>
       <div class="br trust" style="--d:3">
@@ -466,30 +472,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
     </div>
 
     <div class="art" id="art">
-      <div class="art-frame" id="artFrame">
-        <!-- Rural Bangladesh scene -->
-        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of a Bangladeshi village with paddy fields, a river and a country boat at sunrise">
-          <defs>
-            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7D9B0"/><stop offset=".55" stop-color="#FBEBD0"/><stop offset="1" stop-color="#F6F0E3"/></linearGradient>
-            <linearGradient id="river" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CC7C0"/><stop offset="1" stop-color="#5E9C97"/></linearGradient>
-            <linearGradient id="field" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8DB66A"/><stop offset="1" stop-color="#3E7A4A"/></linearGradient>
-          </defs>
-          <rect width="400" height="500" fill="url(#sky)"/>
-          <circle cx="260" cy="170" r="70" fill="#F3B27A" opacity=".35"/><circle cx="260" cy="170" r="42" fill="#E98F55"/>
-          <g fill="#fff" opacity=".8"><ellipse cx="80" cy="90" rx="46" ry="10"/><ellipse cx="108" cy="80" rx="28" ry="9"/><ellipse cx="320" cy="70" rx="40" ry="8"/></g>
-          <path d="M0 250 Q70 220 150 245 T300 238 T400 250 V300 H0Z" fill="#6E9B63"/>
-          <g fill="#2F5E3A"><path d="M30 250v-36" stroke="#5B3A22" stroke-width="4"/><ellipse cx="30" cy="206" rx="26" ry="20"/><path d="M95 252v-26" stroke="#5B3A22" stroke-width="4"/><ellipse cx="95" cy="222" rx="20" ry="16"/><path d="M345 248v-34" stroke="#5B3A22" stroke-width="4"/><ellipse cx="345" cy="206" rx="26" ry="20"/></g>
-          <g><rect x="140" y="226" width="46" height="26" fill="#C9A47A"/><path d="M134 228 L163 204 L192 228Z" fill="#8A5A36"/><rect x="156" y="236" width="12" height="16" fill="#5B3A22"/></g>
-          <g><rect x="210" y="232" width="34" height="20" fill="#D8B68C"/><path d="M205 234 L227 214 L249 234Z" fill="#A5693E"/></g>
-          <rect y="290" width="400" height="90" fill="url(#river)"/>
-          <g stroke="#fff" stroke-width="2" opacity=".5" fill="none" stroke-linecap="round"><path d="M40 310h50M250 322h70M120 340h60M300 304h40"/></g>
-          <g class="boat"><path d="M120 330 Q200 356 290 326 L276 342 Q200 362 134 346Z" fill="#7A4A2A"/><path d="M200 326V270" stroke="#5B3A22" stroke-width="3"/><path d="M200 272 Q246 288 244 322 L200 322Z" fill="#F6F0E3"/><path d="M200 278 Q226 292 226 322" stroke="#C2693F" stroke-width="3" fill="none"/></g>
-          <path d="M0 372 Q100 356 200 372 T400 366 V500 H0Z" fill="url(#field)"/>
-          <g stroke="#2F6A3C" stroke-width="2" opacity=".55" fill="none"><path d="M0 410 Q200 392 400 410"/><path d="M0 440 Q200 420 400 440"/><path d="M0 472 Q200 450 400 472"/></g>
-          <g fill="#E9C46A"><path d="M40 470c4-26 2-44 18-56-4 20 0 34-8 56Z"/><path d="M340 480c-4-26-2-44-18-56 4 20 0 34 8 56Z"/><path d="M92 486c3-18 1-30 12-38-3 14 0 24-6 38Z"/></g>
-          <g transform="translate(250 395)"><circle cx="0" cy="-30" r="9" fill="#8A5A36"/><path d="M-14 -20h28l8 46h-44z" fill="#C2693F"/><path d="M-8 -37q8-10 16 0z" fill="#F6F0E3"/></g>
-        </svg>
-      </div>
+      <div class="art-frame" id="artFrame"></div>
       <div class="chip c1"><i><svg class="ico"><use href="#i-thread"/></svg></i><div><b>Jamdani &amp; Nakshi Kantha</b><small>Traditional textiles</small></div></div>
       <div class="chip c2"><i><svg class="ico"><use href="#i-cup"/></svg></i><div><b>Regional foods</b><small>Curd, sweets, tea &amp; more</small></div></div>
       <div class="chip c3"><i><svg class="ico"><use href="#i-pot"/></svg></i><div><b>Handicrafts</b><small>Made by local artisans</small></div></div>
@@ -546,7 +529,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
       <div class="reveal" style="--d:2">
         <div class="divs" id="divs" role="tablist" aria-label="Divisions"></div>
         <p class="dist-note">Examples shown are illustrative. Availability is confirmed by producers and student agents for each order, and first-release coverage may not include every district.</p>
-        <a class="btn btn-primary" style="margin-top:22px" href="products.php">Browse all districts <svg width="18" height="18"><use href="#arrow"/></svg></a>
+        <a class="btn btn-primary" style="margin-top:22px" href="pages/products.html">Browse all districts <svg width="18" height="18"><use href="#arrow"/></svg></a>
       </div>
       <div class="dist-panel reveal" style="--d:3" id="distPanel" aria-live="polite"></div>
     </div>
@@ -567,7 +550,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
     </div>
     <div class="prods" id="prods"></div>
     <p class="note">Sample records so the layout can be reviewed. In production this reads only products registered in the DeshiDokan database; price and availability appear only when a record has them.</p>
-    <div class="center" style="margin-top:22px"><a class="btn btn-primary" href="products.php">Explore All Products <svg width="18" height="18"><use href="#arrow"/></svg></a></div>
+    <div class="center" style="margin-top:22px"><a class="btn btn-primary" href="pages/products.html">Explore All Products <svg width="18" height="18"><use href="#arrow"/></svg></a></div>
   </div>
 </section>
 
@@ -621,7 +604,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
           <li><svg><use href="#check"/></svg>Records delivery with a one-time code or proof of delivery.</li>
           <li><svg><use href="#check"/></svg>Earns a commission, tracked in a clear earnings ledger with withdrawal requests.</li>
         </ul>
-        <a class="btn btn-light" style="margin-top:26px" href="register.php?role=agent">Become a student agent <svg width="18" height="18"><use href="#arrow"/></svg></a>
+        <a class="btn btn-light" style="margin-top:26px" href="pages/register.html">Become a student agent <svg width="18" height="18"><use href="#arrow"/></svg></a>
       </div>
       <div class="order-card reveal" style="--d:3" id="orderCard">
         <div class="order-top"><span>Order tracking</span><span style="color:var(--forest);font-weight:600">Example</span></div>
@@ -662,7 +645,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
         <p class="bn" lang="bn">আজই খুঁজে নিন আপনার জেলার স্বাদ ও ঐতিহ্য।</p>
         <p class="sub" style="margin-top:14px">Browse traditional foods, clothing and handicrafts from local producers across Bangladesh.</p>
         <div class="cta" style="margin-top:28px">
-          <a class="btn btn-light" href="products.php">Explore Products <svg width="18" height="18"><use href="#arrow"/></svg></a>
+          <a class="btn btn-light" href="pages/products.html">Explore Products <svg width="18" height="18"><use href="#arrow"/></svg></a>
           <a class="btn btn-outline" href="#districts">Discover Districts</a>
         </div>
       </div>
@@ -675,10 +658,10 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
 <footer>
   <div class="wrap">
     <div class="f-grid">
-      <div><a class="brand" href="index.php"><svg><use href="#logo"/></svg>Deshi<b>Dokan</b></a><p>A district-based marketplace for traditional foods, clothing and handicrafts from Bangladesh.</p></div>
-      <div><h4>Shop</h4><ul><li><a href="products.php">All products</a></li><li><a href="products.php?category=food">Traditional foods</a></li><li><a href="products.php?category=clothing">Clothing &amp; textiles</a></li><li><a href="products.php?category=handicrafts">Handicrafts</a></li></ul></div>
+      <div><a class="brand" href="index.html"><svg><use href="#logo"/></svg>Deshi<b>Dokan</b></a><p>A district-based marketplace for traditional foods, clothing and handicrafts from Bangladesh.</p></div>
+      <div><h4>Shop</h4><ul><li><a href="pages/products.html">All products</a></li><li><a href="pages/products.html?category=food">Traditional foods</a></li><li><a href="pages/products.html?category=clothing">Clothing &amp; textiles</a></li><li><a href="pages/products.html?category=handicrafts">Handicrafts</a></li></ul></div>
       <div><h4>Explore</h4><ul><li><a href="#districts">Districts</a></li><li><a href="#roles">How it works</a></li><li><a href="#agents">Student agents</a></li><li><a href="#faq">FAQ</a></li></ul></div>
-      <div><h4>Account</h4><ul><li><a href="login.php">Log in</a></li><li><a href="register.php">Create account</a></li><li><a href="cart.php">Cart</a></li><li><a href="orders.php">Order tracking</a></li></ul></div>
+      <div><h4>Account</h4><ul><li><a href="pages/login.html">Log in</a></li><li><a href="pages/register.html">Create account</a></li><li><a href="pages/cart.html">Cart</a></li><li><a href="pages/checkout.html">Checkout</a></li></ul></div>
     </div>
     <div class="f-bot"><span>© <span id="yr"></span> DeshiDokan. All rights reserved.</span><span>Made with care for Bangladesh’s heritage</span></div>
   </div>
@@ -692,7 +675,8 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
 
   /* intro letters + ready */
   var nm=$('#introName');'DeshiDokan'.split('').forEach(function(c,i){var s=document.createElement('span');s.className='l';s.textContent=c;s.style.animationDelay=(.25+i*.05)+'s';nm.appendChild(s)});
-  setTimeout(function(){document.body.classList.add('ready')},reduce?0:1700);
+  var skip=document.documentElement.classList.contains('no-intro');
+  setTimeout(function(){document.body.classList.add('ready')},(reduce||skip)?0:1700);
 
   /* headline letter split */
   var idx=0;$$('[data-split]').forEach(function(el){
@@ -736,7 +720,7 @@ footer li a{transition:color .3s,padding .3s}footer li a:hover{color:#fff;paddin
   };
   var dv=$('#divs'),dp=$('#distPanel');
   function show(k){var d=D[k];$$('.div-btn',dv).forEach(function(b){var on=b.dataset.k===k;b.classList.toggle('active',on);b.setAttribute('aria-selected',on)});
-    dp.innerHTML='<h3>'+k+' Division</h3><p class="bn" lang="bn">'+d.bn+' বিভাগ</p><div class="dist-list">'+d.items.map(function(it,i){return '<a class="dist-item" style="--i:'+i+'" href="products.php?q='+encodeURIComponent(it[0].replace(/&amp;/g,'&'))+'"><div><b>'+it[0]+'</b><br><span>'+it[1]+'</span></div><em>'+it[2]+'</em></a>'}).join('')+'</div>'}
+    dp.innerHTML='<h3>'+k+' Division</h3><p class="bn" lang="bn">'+d.bn+' বিভাগ</p><div class="dist-list">'+d.items.map(function(it,i){return '<a class="dist-item" style="--i:'+i+'" href="pages/products.html?q='+encodeURIComponent(it[0].replace(/&amp;/g,'&'))+'"><div><b>'+it[0]+'</b><br><span>'+it[1]+'</span></div><em>'+it[2]+'</em></a>'}).join('')+'</div>'}
   Object.keys(D).forEach(function(k,i){var b=document.createElement('button');b.className='div-btn';b.textContent=k;b.dataset.k=k;b.setAttribute('role','tab');b.addEventListener('click',function(){show(k)});dv.appendChild(b)});
   show('Dhaka');
 
@@ -769,7 +753,7 @@ function art(t,a,b){
     var list=P.filter(function(p){var hay=(p[0]+' '+p[1]+' '+p[3]+' '+p[2]).toLowerCase().replace(/&amp;/g,'&');
       return (!q||q.split(/\s+/).every(function(w){return hay.indexOf(w)>-1}))&&(!d||p[1].replace(' region','')===d)&&(!fcat||p[2]===fcat)});
     $('#fcount').textContent=list.length+(list.length===1?' product':' products');
-    pg.innerHTML=list.length?list.map(function(p,i){return '<article class="card tilt prod in" style="animation:rise .6s var(--ease) both;animation-delay:'+(i*50)+'ms"><span class="tag">'+p[2]+'</span><div class="img">'+art(p[6],p[4],p[5])+'</div><div class="body"><h3>'+p[0]+'</h3><p class="meta ico-line"><svg class="ico"><use href="#i-pin"/></svg>'+p[1]+'</p><div class="row"><span class="price-note">See product page</span><a class="add" href="products.php?q='+encodeURIComponent(p[0].replace(/&amp;/g,'&'))+'">View <svg width="14" height="14"><use href="#arrow"/></svg></a></div></div></article>'}).join(''):'<div class="empty">No products match this search yet. Try another keyword, or clear the filters.</div>';
+    pg.innerHTML=list.length?list.map(function(p,i){return '<article class="card tilt prod in" style="animation:rise .6s var(--ease) both;animation-delay:'+(i*50)+'ms"><span class="tag">'+p[2]+'</span><div class="img">'+art(p[6],p[4],p[5])+'</div><div class="body"><h3>'+p[0]+'</h3><p class="meta ico-line"><svg class="ico"><use href="#i-pin"/></svg>'+p[1]+'</p><div class="row"><span class="price-note">See product page</span><a class="add" href="pages/products.html?q='+encodeURIComponent(p[0].replace(/&amp;/g,'&'))+'">View <svg width="14" height="14"><use href="#arrow"/></svg></a></div></div></article>'}).join(''):'<div class="empty">No products match this search yet. Try another keyword, or clear the filters.</div>';
   }
   fq.addEventListener('input',renderP);dsel.addEventListener('change',renderP);
   $$('#fcats .fchip').forEach(function(b){b.addEventListener('click',function(){fcat=b.dataset.c;$$('#fcats .fchip').forEach(function(x){x.setAttribute('aria-pressed',x===b)});renderP()})});
@@ -839,7 +823,7 @@ function person(id,o){var sk=o.skin||'#C98F66',hr=o.hair||'#2A1A12';
  (o.bag?'<rect x="-23" y="-88" width="15" height="36" rx="6" fill="'+o.bag+'"/>':'')+
  '<rect x="-13" y="-92" width="26" height="48" rx="11" fill="'+o.shirt+'"/>'+
  '<g id="'+id+'fl"><rect x="-4" y="-46" width="10" height="46" rx="4" fill="'+o.pants+'"/></g>'+
- '<circle cx="2" cy="-106" r="12" fill="'+sk+'"/><path d="M-10 -108Q-8 -122 4 -119Q15 -117 14 -106Q8 -112 -2 -111Z" fill="'+hr+'"/>'+
+ '<circle cx="2" cy="-106" r="12" fill="' + sk + '"/><path d="M-10 -108Q-8 -122 4 -119Q15 -117 14 -106Q8 -112 -2 -111Z" fill="' + hr + '"/>' +
  '<g id="'+id+'ar"><rect x="-4" y="-88" width="8" height="34" rx="4" fill="'+sk+'"/></g></g></g>'}
 function txt(x,y,s,o){o=o||{};return '<text x="'+x+'" y="'+y+'" font-size="'+(o.s||12)+'" font-weight="'+(o.w||500)+'" fill="'+(o.f||'#16201A')+'" text-anchor="'+(o.a||'middle')+'" font-family="Inter,system-ui,sans-serif"'+(o.id?' id="'+o.id+'"':'')+'>'+s+'</text>'}
 function palm(x,h,sc,dl){var o='<g transform="translate('+x+',578) scale('+sc+')"><g class="palm" style="animation-delay:-'+dl.toFixed(1)+'s"><path d="M0 0Q'+(h*.12)+' '+(-h*.5)+' '+(h*.05)+' '+(-h)+'" stroke="#6B4A2E" stroke-width="7" fill="none" stroke-linecap="round"/><g transform="translate('+(h*.05)+','+(-h)+')" fill="#2F6A3C">';
@@ -978,8 +962,6 @@ dotEls.forEach(function(b,i){b.addEventListener('click',function(){scrollTo({top
     for(i=0;i<(opt.birds||1);i++)h+='<div class="bird" style="top:'+(8+r()*40|0)+'%;color:'+(opt.dark?'#F6F0E3':'#3C4A40')+';animation-duration:'+(38+r()*26|0)+'s;animation-delay:-'+(r()*50|0)+'s">'+BIRD+'</div>';
     for(i=0;i<(opt.leaves||4);i++)h+='<div class="leaf" style="left:'+(r()*96|0)+'%;color:'+(r()<.5?'#6AA064':'#C2693F')+';animation-duration:'+(16+r()*14|0)+'s;animation-delay:-'+(r()*24|0)+'s">'+LEAF+'</div>';
     d.innerHTML=h;el.insertBefore(d,el.firstChild)}
-  var hero=document.querySelector('.hero');
-  if(hero){amb(hero,{clouds:3,birds:3,leaves:5})}
   q('.s').forEach(function(s,i){amb(s,{clouds:1,birds:1,leaves:3,dark:s.classList.contains('dark')})});
   /* grass strips */
   function grass(host,a,b){
@@ -987,7 +969,6 @@ dotEls.forEach(function(b,i){b.addEventListener('click',function(){scrollTo({top
     [[a,.6,0],[b,1,1]].forEach(function(L){for(var i=0;i<n;i++){var x=i*(w/n)+r()*10,hh=24+r()*(L[2]?40:30),dx=(r()-.5)*14;
       s+='<path class="blade" style="animation-delay:-'+(r()*4).toFixed(1)+'s" d="M'+x.toFixed(0)+' '+h+'Q'+(x+dx/2).toFixed(0)+' '+(h-hh/2).toFixed(0)+' '+(x+dx).toFixed(0)+' '+(h-hh).toFixed(0)+'" stroke="'+L[0]+'" stroke-width="'+(L[2]?3:2.4)+'" fill="none" stroke-linecap="round" opacity="'+L[1]+'"/>'}});
     var g=document.createElement('div');g.className='grass';g.innerHTML=s+'</svg>';host.appendChild(g)}
-  if(hero)grass(hero,'#8DB58C','#4F8A55');
   var fin=document.querySelector('.final');if(fin){fin.style.position='relative';fin.style.paddingBottom='7rem';grass(fin,'#8DB58C','#4F8A55')}
   /* wave seams between differently coloured sections */
   var cream=getComputedStyle(document.body).backgroundColor;
@@ -999,5 +980,6 @@ dotEls.forEach(function(b,i){b.addEventListener('click',function(){scrollTo({top
 })();
 
 </script>
+<script src="haat-bg.js" data-target=".hero-bg"></script>
 </body>
 </html>
